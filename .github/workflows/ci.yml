@@ -1,0 +1,40 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        node: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm test
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Shell syntax
+        run: bash -n install.sh && bash -n uninstall.sh
+      - name: Install into a throwaway HOME
+        run: |
+          export HOME="$(mktemp -d)"
+          export XDG_CONFIG_HOME="$HOME/.config"
+          ./install.sh --global --no-bin
+          test -f "$XDG_CONFIG_HOME/opencode/plugins/forge/index.ts"
+          test -f "$XDG_CONFIG_HOME/opencode/agents/forge/supervisor.md"
+          test -f "$XDG_CONFIG_HOME/opencode/commands/forge/build.md"
+          test -f "$XDG_CONFIG_HOME/opencode/forge/scripts/forge.mjs"
+          node "$XDG_CONFIG_HOME/opencode/forge/scripts/forge.mjs" doctor || true
+          ./uninstall.sh --global
+          test ! -e "$XDG_CONFIG_HOME/opencode/forge"

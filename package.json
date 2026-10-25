@@ -1,0 +1,40 @@
+{
+  "name": "forge-opencode",
+  "version": "0.7.0",
+  "private": true,
+  "type": "module",
+  "description": "Forge for OpenCode: an autonomous supervisor-driven build loop with an adversarial critic and a deterministic verification gate.",
+  "exports": {
+    ".": "./plugin/index.ts"
+  },
+  "files": [
+    "plugin",
+    "scripts",
+    "catalog",
+    "agents",
+    "commands",
+    "install.sh",
+    "uninstall.sh",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test tests/gate.test.mjs tests/gate-json.test.mjs tests/misc.test.mjs tests/incremental.test.mjs",
+    "test:all": "node --test",
+    "smoke:catalog": "node scripts/dev/smoke-catalog.mjs",
+    "build:catalog": "node catalog/build.mjs",
+    "install:local": "./install.sh --local"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "autonomous-agents",
+    "agent-loop",
+    "quality-gate",
+    "verification"
+  ],
+  "license": "MIT"
+}
