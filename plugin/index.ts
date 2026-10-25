@@ -149,7 +149,8 @@ export default {
 
       // Remember which session owns the loop. Subagent sessions run forge commands too, so we only
       // bind on init/start/tweak, which the main session runs.
-      if (event.tool === "bash" && /forge\.mjs["']?\s+(init|start|tweak)\b/.test(String(input.command || ""))) {
+      const command = String(input.command ?? input.cmd ?? "")
+      if (["bash", "shell"].includes(event.tool) && /forge\.mjs["']?\s+(init|start|tweak)\b/.test(command)) {
         loopSession = event.sessionID
       }
 
@@ -161,7 +162,7 @@ export default {
           throw new Error(GUARD_MESSAGE)
         }
       }
-      if (event.tool === "bash" && bashTouchesProtected(String(input.command || ""))) {
+      if (["bash", "shell"].includes(event.tool) && bashTouchesProtected(command)) {
         throw new Error(GUARD_MESSAGE)
       }
     })
@@ -199,7 +200,7 @@ export default {
             if (isChild === undefined) {
               try {
                 const info: any = await ctx.session.get({ sessionID })
-                isChild = Boolean(info?.parentID)
+                isChild = Boolean(info?.parentID ?? info?.data?.parentID)
               } catch {
                 isChild = false
               }
